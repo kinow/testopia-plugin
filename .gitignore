@@ -1,4 +1,5 @@
 *.class
+work
 .project
 .classpath
 .buildpath
