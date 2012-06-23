@@ -1,0 +1,6 @@
+<j:jelly xmlns:j="jelly:core" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+    xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+    <t:summary icon="/plugin/testopia/icons/testopia-48.png">
+		<h1>TODO</h1>
+	</t:summary>
+</j:jelly>

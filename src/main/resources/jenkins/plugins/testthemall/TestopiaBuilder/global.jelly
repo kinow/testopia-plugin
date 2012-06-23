@@ -1,0 +1,35 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  
+  <f:section title="Testopia">
+    <f:entry title="${%Testopia Installation}" 
+      description="${%List Of Testopia Installations}">
+      <f:repeatable var="inst" items="${descriptor.installations}">
+        <table width="100%">
+	  	  <f:entry title="${%Name}">
+            <f:textbox name="Testopia.name" value="${inst.name}" 
+               checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
+          </f:entry>
+          <f:entry title="URL" help="${rootURL}/../plugin/Testopia/help-TestopiaUrl.html">
+            <f:textbox name="Testopia.url" value="${inst.url}" 
+            default="http://localhost/bugzilla/xmlrpc.cgi" 
+            checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
+          </f:entry>
+          <f:entry title="${%User name}">
+            <f:textbox name="Testopia.username" value="${inst.username}" 
+            checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
+          </f:entry>
+          <f:entry title="${%Password}">
+            <f:textbox name="Testopia.password" value="${inst.password}" 
+            checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
+          </f:entry>
+          <f:entry title="">
+            <div align="right">
+              <f:repeatableDeleteButton />
+            </div>
+          </f:entry>
+        </table>
+      </f:repeatable>
+    </f:entry>
+  </f:section>	
+	
+</j:jelly>
