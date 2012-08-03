@@ -39,7 +39,11 @@ import hudson.tasks.Builder;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.mozilla.testopia.model.TestCase;
 import org.mozilla.testopia.service.xmlrpc.XmlRpcMiscService;
@@ -52,6 +56,11 @@ import org.mozilla.testopia.transport.TestopiaXmlRpcClient;
  * @since 0.1
  */
 public class TestopiaBuilder extends Builder {
+	// Used for HTTP basic auth
+	private static final String BASIC_HTTP_PASSWORD = "basicPassword";
+	
+	private static final Logger LOGGER = Logger.getLogger("jenkins.plugins.testopia");
+	
 	/**
 	 * Testopia installation name.
 	 */
@@ -161,6 +170,10 @@ public class TestopiaBuilder extends Builder {
 		if(installation == null) {
 			throw new AbortException("Invalid Testopia installation.");
 		}
+		if(StringUtils.isNotBlank(installation.getProperties())) {
+			listener.getLogger().println("Preparing Testopia connection properties.");
+			setProperties(installation.getProperties(), listener);
+		}
 		URL url = new URL(installation.getUrl());
         TestopiaXmlRpcClient xmlRpcClient = new TestopiaXmlRpcClient(url);
         XmlRpcMiscService misc = new XmlRpcMiscService(xmlRpcClient);
@@ -173,6 +186,7 @@ public class TestopiaBuilder extends Builder {
 		}
 		//TestRun testRun = testRunSvc.get(this.getTestRunId());
 		TestCase[] testCases = testRunSvc.getTestCases(this.getTestRunId());
+		// sort and filter test cases
 		listener.getLogger().println("Executing single build steps");
 		this.executeSingleBuildSteps(build, launcher, listener);
 		listener.getLogger().println("Executing iterative build steps");
@@ -230,10 +244,13 @@ public class TestopiaBuilder extends Builder {
 				}
 			}
 		}
-		for (TestCase automatedTestCase : testCases) {
-			if (iterativeBuildSteps != null) {
+		if (iterativeBuildSteps != null) {
+			for (TestCase automatedTestCase : testCases) {
+				if(LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.log(Level.FINE, "Executing iterative build step");
+					LOGGER.log(Level.FINE, "TestCase: id["+automatedTestCase.getId()+"], script["+automatedTestCase.getScript()+"]");
+				}
 				final EnvVars iterativeEnvVars = Utils.buildTestCaseEnvVars(automatedTestCase);
-
 				build.addAction(new EnvironmentContributingAction() {
 					public void buildEnvVars(AbstractBuild<?, ?> build,
 							EnvVars env) {
@@ -267,6 +284,67 @@ public class TestopiaBuilder extends Builder {
 				if(!success) {
 					build.setResult(Result.UNSTABLE);
 				}
+			}
+		}
+	}
+	
+	/**
+	 * <p>Define properties. Following is the list of available properties.</p>
+	 * 
+	 * <ul>
+	 *  	<li>xmlrpc.basicEncoding</li>
+ 	 *  	<li>xmlrpc.basicPassword</li>
+ 	 *  	<li>xmlrpc.basicUsername</li>
+ 	 *  	<li>xmlrpc.connectionTimeout</li>
+ 	 *  	<li>xmlrpc.contentLengthOptional</li>
+ 	 *  	<li>xmlrpc.enabledForExceptions</li>
+ 	 *  	<li>xmlrpc.encoding</li>
+ 	 *  	<li>xmlrpc.gzipCompression</li>
+ 	 *  	<li>xmlrpc.gzipRequesting</li>
+ 	 *  	<li>xmlrpc.replyTimeout</li>
+ 	 *  	<li>xmlrpc.userAgent</li>
+	 * </ul>
+	 * 
+	 * @param properties List of comma separated properties
+	 * @param listener Jenkins Build listener
+	 */
+	public static void setProperties(String properties, BuildListener listener) {
+		if (StringUtils.isNotBlank(properties)) {
+			final StringTokenizer tokenizer = new StringTokenizer(properties, ",");
+
+			if (tokenizer.countTokens() > 0) {
+				while (tokenizer.hasMoreTokens()) {
+					String systemProperty = tokenizer.nextToken();
+					maybeAddSystemProperty(systemProperty, listener);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Maybe adds a system property if it is in format <key>=<value>.
+	 * 
+	 * @param systemProperty System property entry in format <key>=<value>.
+	 * @param listener Jenkins Build listener
+	 */
+	public static void maybeAddSystemProperty(String systemProperty, BuildListener listener) {
+		final StringTokenizer tokenizer = new StringTokenizer(systemProperty, "=:");
+		if (tokenizer.countTokens() == 2) {
+			final String key = tokenizer.nextToken();
+			final String value = tokenizer.nextToken();
+
+			if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
+				if (key.contains(BASIC_HTTP_PASSWORD)) {
+					listener.getLogger().println("Setting key " + key + "=********");
+				} else {
+					listener.getLogger().println("Setting key " + key + "=" + value);
+				}
+				try {
+					System.setProperty(key, value);
+				} catch (SecurityException se) {
+					se.printStackTrace(listener.getLogger());
+				}
+
 			}
 		}
 	}

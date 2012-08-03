@@ -3,40 +3,40 @@
   <f:block><p><strong>Testopia Configuration</strong></p></f:block>
 
   <f:entry title="${%Testopia Version}">
-  	<select class="setting-input" name="TestopiaBuilder.testopiaInstallationName">
-      <option>(Select one)</option>
-      <j:forEach var="inst" items="${descriptor.installations}">
-        <f:option selected="${inst.name==instance.testopiaInstallationName}">${inst.name}</f:option>
-      </j:forEach>
-    </select>
+    <select class="setting-input" name="TestopiaBuilder.testopiaInstallationName">
+    <option>(Select one)</option>
+    <j:forEach var="inst" items="${descriptor.installations}">
+    <f:option selected="${inst.name==instance.testopiaInstallationName}">${inst.name}</f:option>
+    </j:forEach>
+  </select>
   </f:entry>
 
   <f:entry title="${%Test Run ID}">
-	  <f:textbox name="TestopiaBuilder.testRunId" value="${instance.testRunId}" />
+    <f:textbox name="TestopiaBuilder.testRunId" value="${instance.testRunId}" />
   </f:entry>
   
-    <f:block><p><strong>Test Execution</strong></p></f:block>
-    
-    <f:entry title="${%Single Test Build Steps}">
-      <f:hetero-list name="singleBuildSteps" targetType="${descriptor.testopiaBuildType}"
-           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
-           addCaption="Add action" hasHeader="true"/>
-    </f:entry>
+  <f:block><p><strong>Test Execution</strong></p></f:block>
   
-    <f:entry title="${%Iterative Test Build Steps}">
-      <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testopiaBuildType}"
-           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
-           addCaption="Add action" hasHeader="true"/>
-    </f:entry>
+  <f:entry title="${%Single Test Build Steps}">
+    <f:hetero-list name="singleBuildSteps" targetType="${descriptor.testopiaBuildType}"
+       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
+       addCaption="Add action" hasHeader="true"/>
+  </f:entry>
+  
+  <f:entry title="${%Iterative Test Build Steps}">
+    <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testopiaBuildType}"
+       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
+       addCaption="Add action" hasHeader="true"/>
+  </f:entry>
   <f:entry title="${%Before iterating all test cases Build Steps}">
-      <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
-           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
-           addCaption="Add action" hasHeader="true"/>
+    <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
+       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
+       addCaption="Add action" hasHeader="true"/>
   </f:entry>
   <f:entry title="${%After iterating all test cases Build Steps}">
-      <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
-           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
-           addCaption="Add action" hasHeader="true"/>
+    <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
+       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
+       addCaption="Add action" hasHeader="true"/>
   </f:entry>
   
 </j:jelly>

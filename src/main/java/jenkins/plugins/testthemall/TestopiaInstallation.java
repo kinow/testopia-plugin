@@ -41,20 +41,23 @@ public class TestopiaInstallation implements Serializable {
 	private final String username;
 	private final String password;
 	private final String url;
+	private final String properties;
 	
 	/**
 	 * @param name
 	 * @param username
 	 * @param password
 	 * @param url
+	 * @param properties
 	 */
 	@DataBoundConstructor
-	public TestopiaInstallation(String name, String username, String password, String url) {
+	public TestopiaInstallation(String name, String username, String password, String url, String properties) {
 		super();
 		this.name = name;
 		this.username = username;
 		this.password = password;
 		this.url = url;
+		this.properties = properties;
 	}
 
 	/**
@@ -83,6 +86,13 @@ public class TestopiaInstallation implements Serializable {
 	 */
 	public String getUrl() {
 		return url;
+	}
+	
+	/**
+	 * @return the properties
+	 */
+	public String getProperties() {
+		return properties;
 	}
 	
 }
