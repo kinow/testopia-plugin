@@ -6,7 +6,3 @@ work
 .settings
 target
 test-output
-# Package Files #
-*.jar
-*.war
-*.ear
