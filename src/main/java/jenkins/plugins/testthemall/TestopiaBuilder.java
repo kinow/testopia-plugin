@@ -38,6 +38,7 @@ import hudson.tasks.Builder;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -185,7 +186,10 @@ public class TestopiaBuilder extends Builder {
 			throw new AbortException(e.getMessage());
 		}
 		//TestRun testRun = testRunSvc.get(this.getTestRunId());
-		TestCase[] testCases = testRunSvc.getTestCases(this.getTestRunId());
+		if(LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.log(Level.FINE, "Filtering for automated test cases...");
+		}
+		TestCase[] testCases = filter(testRunSvc.getTestCases(this.getTestRunId()));
 		// sort and filter test cases
 		listener.getLogger().println("Executing single build steps");
 		this.executeSingleBuildSteps(build, launcher, listener);
@@ -195,6 +199,22 @@ public class TestopiaBuilder extends Builder {
 		//TODO: create report
 		//TODO: create graphs
 		return Boolean.TRUE;
+	}
+	/**
+	 * Filter an array of test cases for automated test cases only.
+	 * @param testCases array of test cases
+	 * @return filtered array of automated test cases
+	 */
+	private TestCase[] filter(TestCase[] testCases) {
+		List<TestCase> automatedTestCases = new ArrayList<TestCase>();
+		if(testCases != null) {
+			for(TestCase testCase : testCases) {
+				if(testCase.getAutomated()) {
+					automatedTestCases.add(testCase);
+				} // else drop it
+			}
+		}
+		return automatedTestCases.toArray(new TestCase[0]);
 	}
 	/**
 	 * Executes the list of single build steps.
