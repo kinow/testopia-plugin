@@ -209,7 +209,7 @@ public class TestopiaBuilder extends Builder {
 		List<TestCase> automatedTestCases = new ArrayList<TestCase>();
 		if(testCases != null) {
 			for(TestCase testCase : testCases) {
-				if(testCase.getAutomated()) {
+				if(testCase != null && testCase.getAutomated()) {
 					automatedTestCases.add(testCase);
 				} // else drop it
 			}
