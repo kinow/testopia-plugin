@@ -246,6 +246,9 @@ public class TestopiaBuilder extends Builder {
 		}
 		if (iterativeBuildSteps != null) {
 			for (TestCase automatedTestCase : testCases) {
+				if(automatedTestCase == null) {
+					continue;
+				}
 				if(LOGGER.isLoggable(Level.FINE)) {
 					LOGGER.log(Level.FINE, "Executing iterative build step");
 					LOGGER.log(Level.FINE, "TestCase: id["+automatedTestCase.getId()+"], script["+automatedTestCase.getScript()+"]");
