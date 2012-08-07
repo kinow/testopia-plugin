@@ -6,8 +6,8 @@
     <version>1.424</version><!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
-  <groupId>jenkins.plugins.testthemall</groupId>
-  <artifactId>testthemall</artifactId>
+  <groupId>jenkins.plugins.testopia</groupId>
+  <artifactId>testopia</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
   
@@ -220,4 +220,20 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
+  <name>Jenkins Testopia Plug-in</name>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Testopia+Plugin</url>
+  <description>Jenkins Testopia Plug-in</description>
+  <inceptionYear>2012</inceptionYear>
+  <organization>
+  	<name>Jenkins CI</name>
+  	<url>http://www.jenkins-ci.org</url>
+  </organization>
+  <scm>
+  	<url>https://github.com/kinow/testopia-plugin.git</url>
+  	<connection>git://github.com/kinow/testopia-plugin.git</connection>
+  	<developerConnection>git@github.com:kinow/testopia-plugin.git</developerConnection>
+  </scm>
+  <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>
