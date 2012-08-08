@@ -34,7 +34,10 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import jenkins.plugins.testopia.result.ResultSeeker;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
@@ -48,27 +51,28 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 
 	// exposed for Jelly
     public final Class<TestopiaBuilder> testopiaBuilderType	 = TestopiaBuilder.class;
-    
+    /**
+     * Array of installations of Testopia.
+     */
 	@CopyOnWrite
 	private volatile TestopiaInstallation[] installations = new TestopiaInstallation[0];
-
+	/**
+	 * Constructor with no args.
+	 */
 	public TestopiaBuilderDescriptor() {
 		super(TestopiaBuilder.class);
 		load();
 	}
-	
 	@Override
 	public String getDisplayName() {
 		return "Invoke Testopia";
 	}
-
 	/**
 	 * @return the installations
 	 */
 	public TestopiaInstallation[] getInstallations() {
 		return installations;
 	}
-
 	public TestopiaInstallation getInstallationByName(String name) {
 		TestopiaInstallation installation = null;
 		for (TestopiaInstallation ti : installations) {
@@ -79,7 +83,9 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 		}
 		return installation;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean configure(org.kohsuke.stapler.StaplerRequest req,
 			net.sf.json.JSONObject json) throws Descriptor.FormException {
 		this.installations = req.bindParametersToList(
@@ -88,22 +94,34 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 		save();
 		return Boolean.TRUE;
 	};
-
 	// exposed for Jelly
 	public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(
 			AbstractProject<?, ?> p) {
 		return getBuildSteps();
 	}
-
+	public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(AbstractProject<?, ?> p) {
+    	List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
+    	for(Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
+    		list.add(rs);
+    	}
+    	return list;
+    }
+	/**
+	 * Gets the build steps.
+	 * @return the build steps.
+	 */
 	public static List<Descriptor<? extends BuildStep>> getBuildSteps() {
 		List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
 		addTo(Builder.all(), list);
 		addTo(Publisher.all(), list);
 		return list;
 	}
-
-	private static void addTo(
-			List<? extends Descriptor<? extends BuildStep>> source,
+	/**
+	 * Adds all buid steps to the list of build steps.
+	 * @param source build step.
+	 * @param list list of build steps.
+	 */
+	private static void addTo(List<? extends Descriptor<? extends BuildStep>> source,
 			List<Descriptor<? extends BuildStep>> list) {
 		for (Descriptor<? extends BuildStep> d : source) {
 			if (d instanceof BuildStepDescriptor) {
@@ -114,7 +132,6 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 			}
 		}
 	}
-	
 	/* 
 	 * --- Validation methods ---
 	 */

@@ -1,0 +1,46 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<l:layout norefresh="true">
+		<st:include it="${it.owner}" page="sidepanel.jelly" />
+		<l:main-panel>
+
+			<h1>${%Testopia Results}</h1>
+
+	        <!--st:include page="/tabview/main.jelly" /-->
+	        <table>
+	        <tr>
+	        <td>${%Build Id}: </td><td><b>${it.report.buildId}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Run Id}: </td><td><b>${it.report.runId}</b></td>
+	        </tr>
+	        
+	        <tr>
+            <td>${%Environment Id}: </td><td><b>${it.report.envId}</b></td>
+            </tr>
+	        
+	        <tr>
+	        <td>${%Passed}: </td><td><b>${it.report.passed}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Failed}: </td><td><b>${it.report.failed}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Blocked}: </td><td><b>${it.report.blocked}</b></td>
+	        </tr>
+	        
+	        <tr>
+            <td>${%Not Run}: </td><td><b>${it.report.notRun}</b></td>
+            </tr>
+	        
+	        <tr>
+	        <td>${%Total}: </td><td><b>${it.report.testsTotal}</b></td>
+	        </tr>
+			</table>
+		</l:main-panel>
+	</l:layout>
+</j:jelly>

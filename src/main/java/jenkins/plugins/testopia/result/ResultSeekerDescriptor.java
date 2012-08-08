@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) <2012> <Bruno P. Kinoshita>
+ * Copyright (c) <2011> <Bruno P. Kinoshita>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.plugins.testopia;
+package jenkins.plugins.testopia.result;
 
-import hudson.model.Action;
-import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
 
 /**
- * Testopia project action. This changes projects that are configured to run 
- * Testopia integration.
+ * Descriptor for TestResultSeeker.
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 0.1
  */
-public class TestopiaProjectAction implements Action {
-
-	protected AbstractProject<?, ?> project;
-
-	public TestopiaProjectAction(AbstractProject<?, ?> project) {
-		this.project = project;
-	}
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getIconFileName()
-	 */
-	public String getIconFileName() {
-		return "testopia-32x32.png";
-	}
-
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getDisplayName()
-	 */
-	public String getDisplayName() {
-		return "Testopia";
-	}
-
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getUrlName()
-	 */
-	public String getUrlName() {
-		return "testopiaResult";
-	}
-
+public abstract class ResultSeekerDescriptor extends Descriptor<ResultSeeker> {
+	
 }

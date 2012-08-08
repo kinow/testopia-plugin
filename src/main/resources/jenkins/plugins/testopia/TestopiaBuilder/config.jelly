@@ -22,21 +22,33 @@
        descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
        addCaption="Add action" hasHeader="true"/>
   </f:entry>
-  
   <f:entry title="${%Iterative Test Build Steps}">
     <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testopiaBuildType}"
        descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
        addCaption="Add action" hasHeader="true"/>
   </f:entry>
-  <f:entry title="${%Before iterating all test cases Build Steps}">
-    <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
-       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
-       addCaption="Add action" hasHeader="true"/>
-  </f:entry>
-  <f:entry title="${%After iterating all test cases Build Steps}">
-    <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
-       descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
-       addCaption="Add action" hasHeader="true"/>
+  <f:advanced>
+      <f:entry title="${%Before iterating all test cases Build Steps}">
+        <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
+      </f:entry>
+      <f:entry title="${%After iterating all test cases Build Steps}">
+        <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
+      </f:entry>
+      <f:entry title="${%Failed tests mark build as failure}" help="${rootURL}/../plugin/testopia/help-failedTestsMarkBuildAsFailure.html">
+          <f:checkbox name="TestopiaBuilder.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
+      </f:entry>
+  </f:advanced>
+  
+  <f:block><p><strong>Result Seeking Strategy</strong></p></f:block>
+  
+  <f:entry title="${%Test Result Seeking Strategies}" help="${rootURL}/../plugin/testopia/help-resultSeekingStrategy.html">
+    <f:hetero-list name="resultSeekers" targetType="${descriptor.testopiaBuilderType}"
+       descriptors="${descriptor.getApplicableResultSeekers(it)}" items="${instance.resultSeekers}"
+       addCaption="Add strategy" hasHeader="true"/>
   </f:entry>
   
 </j:jelly>

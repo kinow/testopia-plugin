@@ -1,7 +1,7 @@
-/*
+/* 
  * The MIT License
- *
- * Copyright (c) <2012> <Bruno P. Kinoshita>
+ * 
+ * Copyright (c) 2010 Bruno P. Kinoshita <http://www.kinoshita.eti.br>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.plugins.testopia;
-
-import hudson.model.Action;
-import hudson.model.AbstractProject;
+package jenkins.plugins.testopia.result;
 
 /**
- * Testopia project action. This changes projects that are configured to run 
- * Testopia integration.
+ * Exception threw while seeking test results.
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 0.1
  */
-public class TestopiaProjectAction implements Action {
-
-	protected AbstractProject<?, ?> project;
-
-	public TestopiaProjectAction(AbstractProject<?, ?> project) {
-		this.project = project;
-	}
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getIconFileName()
+public class ResultSeekerException extends RuntimeException {
+	/**
+	 * serialVersionUID.
 	 */
-	public String getIconFileName() {
-		return "testopia-32x32.png";
-	}
-
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getDisplayName()
+	private static final long serialVersionUID = 1805357421004804355L;
+	/**
+	 * Default constructor.
 	 */
-	public String getDisplayName() {
-		return "Testopia";
+	public ResultSeekerException() {
+		super();
 	}
-
-	/* (non-Javadoc)
-	 * @see hudson.model.Action#getUrlName()
+	/**
+	 * @param message
+	 * @param exception
 	 */
-	public String getUrlName() {
-		return "testopiaResult";
+	public ResultSeekerException(String message, Throwable exception) {
+		super(message, exception);
 	}
-
+	/**
+	 * @param message
+	 */
+	public ResultSeekerException(String message) {
+		super(message);
+	}
+	/**
+	 * @param exception
+	 */
+	public ResultSeekerException(Throwable exception) {
+		super(exception);
+	}
 }

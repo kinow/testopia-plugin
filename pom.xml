@@ -74,7 +74,12 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>2.6</version>
-    </dependency> 
+    </dependency>
+    <dependency>
+    	<groupId>org.tap4j</groupId>
+    	<artifactId>tap4j</artifactId>
+    	<version>3.0</version>
+    </dependency>
   </dependencies>
   
   <build>

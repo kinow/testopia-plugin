@@ -38,18 +38,20 @@ import hudson.tasks.Builder;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jenkins.plugins.testopia.result.ResultSeeker;
+import jenkins.plugins.testopia.result.ResultSeekerException;
+import jenkins.plugins.testopia.result.TestCaseWrapper;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.mozilla.testopia.TestopiaAPI;
 import org.mozilla.testopia.model.TestCase;
-import org.mozilla.testopia.service.xmlrpc.XmlRpcMiscService;
-import org.mozilla.testopia.service.xmlrpc.XmlRpcTestRunService;
-import org.mozilla.testopia.transport.TestopiaXmlRpcClient;
+import org.mozilla.testopia.model.TestRun;
 
 /**
  * Testopia Builder.
@@ -87,6 +89,14 @@ public class TestopiaBuilder extends Builder {
 	 */
 	protected final List<BuildStep> afterIteratingAllTestCasesBuildSteps;
 	/**
+	 * If <code>true</code> and a test fails, the build is marked as FAILURE. Otherwise UNSTABLE.
+	 */
+	protected final Boolean failedTestsMarkBuildAsFailure;
+	/**
+	 * List of result seeking strategies.
+	 */
+	protected List<ResultSeeker> resultSeekers;
+	/**
 	 * Le descriptor.
 	 */
 	@Extension
@@ -100,6 +110,8 @@ public class TestopiaBuilder extends Builder {
 	 * @param beforeIteratingAllTestCasesBuildSteps
 	 * @param iterativeBuildSteps
 	 * @param afterIteratingAllTestCasesBuildSteps
+	 * @param failedTestsMarkBuildAsFailure
+	 * @param resultSeekers
 	 */
 	@DataBoundConstructor
 	public TestopiaBuilder(String testopiaInstallationName, 
@@ -107,13 +119,17 @@ public class TestopiaBuilder extends Builder {
 			List<BuildStep> singleBuildSteps, 
 			List<BuildStep> beforeIteratingAllTestCasesBuildSteps, 
 			List<BuildStep> iterativeBuildSteps,
-			List<BuildStep> afterIteratingAllTestCasesBuildSteps) {
+			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
+			Boolean failedTestsMarkBuildAsFailure, 
+			List<ResultSeeker> resultSeekers) {
 		this.testopiaInstallationName = testopiaInstallationName;
 		this.testRunId = testRunId;
 		this.singleBuildSteps = singleBuildSteps;
 		this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
 		this.iterativeBuildSteps = iterativeBuildSteps;
 		this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
+		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
+		this.resultSeekers = resultSeekers;
 	}
 	/**
 	 * @return the testopiaInstallationName
@@ -151,6 +167,24 @@ public class TestopiaBuilder extends Builder {
 	public List<BuildStep> getAfterIteratingAllTestCasesBuildSteps() {
 		return afterIteratingAllTestCasesBuildSteps;
 	}
+	/**
+	 * @return the failedTestsMarkBuildAsFailure
+	 */
+	public Boolean getFailedTestsMarkBuildAsFailure() {
+		return failedTestsMarkBuildAsFailure;
+	}
+	/**
+	 * @return the resultSeekers
+	 */
+	public List<ResultSeeker> getResultSeekers() {
+		return resultSeekers;
+	}
+	/**
+	 * @param resultSeekers the resultSeekers to set
+	 */
+	public void setResultSeekers(List<ResultSeeker> resultSeekers) {
+		this.resultSeekers = resultSeekers;
+	}
 	/* (non-Javadoc)
 	 * @see hudson.tasks.BuildStepCompatibilityLayer#getProjectAction(hudson.model.AbstractProject)
 	 */
@@ -175,12 +209,9 @@ public class TestopiaBuilder extends Builder {
 			listener.getLogger().println("Preparing Testopia connection properties.");
 			setProperties(installation.getProperties(), listener);
 		}
-		URL url = new URL(installation.getUrl());
-        TestopiaXmlRpcClient xmlRpcClient = new TestopiaXmlRpcClient(url);
-        XmlRpcMiscService misc = new XmlRpcMiscService(xmlRpcClient);
-        XmlRpcTestRunService testRunSvc = new XmlRpcTestRunService(xmlRpcClient);
+		TestopiaAPI api = new TestopiaAPI(new URL(installation.getUrl()));
 		try {
-			misc.login(installation.getUsername(), installation.getPassword());
+			api.login(installation.getUsername(), installation.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace(listener.getLogger());
 			throw new AbortException(e.getMessage());
@@ -189,32 +220,59 @@ public class TestopiaBuilder extends Builder {
 		if(LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.log(Level.FINE, "Filtering for automated test cases...");
 		}
-		TestCase[] testCases = filter(testRunSvc.getTestCases(this.getTestRunId()));
+		TestRun testCaseRun = api.getTestRun(this.getTestRunId());
+		TestopiaSite testopia = new TestopiaSite(api);
+		TestCaseWrapper[] testCases = testopia.getTestCases(testCaseRun, api.getTestCases(this.getTestRunId()));
+		if(LOGGER.isLoggable(Level.FINE)) {
+			for(TestCaseWrapper tc : testCases) {
+				LOGGER.log(Level.FINE, "Testopia automated test case ID [" + tc.getId() + "], summary [" +tc.getSummary()+ "]");
+			}
+		}
 		// sort and filter test cases
 		listener.getLogger().println("Executing single build steps");
 		this.executeSingleBuildSteps(build, launcher, listener);
 		listener.getLogger().println("Executing iterative build steps");
 		this.executeIterativeBuildSteps(testCases, build, launcher, listener);
-		//TODO: look for results
-		//TODO: create report
-		//TODO: create graphs
-		return Boolean.TRUE;
-	}
-	/**
-	 * Filter an array of test cases for automated test cases only.
-	 * @param testCases array of test cases
-	 * @return filtered array of automated test cases
-	 */
-	private TestCase[] filter(TestCase[] testCases) {
-		List<TestCase> automatedTestCases = new ArrayList<TestCase>();
-		if(testCases != null) {
-			for(TestCase testCase : testCases) {
-				if(testCase != null && testCase.getAutomated()) {
-					automatedTestCases.add(testCase);
-				} // else drop it
+		
+		// Here we search for test results. The return if a wrapped Test Case
+		// that
+		// contains attachments, platform and notes.
+		try {
+			listener.getLogger().println("Seeking test results");
+			
+			if(getResultSeekers() != null) {
+				for (ResultSeeker resultSeeker : getResultSeekers()) {
+					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
+					resultSeeker.seek(testCases, build, launcher, listener, testopia);
+				}
+			}
+		} catch (ResultSeekerException trse) {
+			trse.printStackTrace(listener.fatalError(trse.getMessage()));
+			throw new AbortException("Error seeking test results: " + trse.getMessage());
+		}
+	
+		// This report is used to generate the graphs and to store the list of
+		// test cases with each found status.
+		final Report report = testopia.getReport();
+		
+		listener.getLogger().println("Found " + report.getTestsTotal() + " test results");
+		
+		final TestopiaResult result = new TestopiaResult(report, build);
+		final TestopiaBuildAction buildAction = new TestopiaBuildAction(build, result);
+		build.addAction(buildAction);
+
+		if (report.getFailed() > 0) {
+			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
+				build.setResult(Result.FAILURE);
+			} else {
+				build.setResult(Result.UNSTABLE);
 			}
 		}
-		return automatedTestCases.toArray(new TestCase[0]);
+
+		LOGGER.log(Level.INFO, "Testopia builder finished");
+		
+		// end
+		return Boolean.TRUE;
 	}
 	/**
 	 * Executes the list of single build steps.
@@ -310,7 +368,6 @@ public class TestopiaBuilder extends Builder {
 			}
 		}
 	}
-	
 	/**
 	 * <p>Define properties. Following is the list of available properties.</p>
 	 * 
