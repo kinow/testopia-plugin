@@ -1,0 +1,17 @@
+<div>
+  <p>
+    Jenkins Testopia Plug-in retrieves automated test cases data from Testopia. 
+	This data is then set as environment variables. Thus your iterative  
+	Build Steps can make use of this information to execute your automated 
+	tests.
+  </p>
+  <p>For instance, you could run ant passing a Test Class as parameter: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTOPIA_TESTCASE_SCRIPT</pre>
+  <p>
+  	List of environment variables that Jenkins Testopia Plug-in defines:
+  </p>
+  <ul>
+	<li>TESTOPIA_TESTCASE_ID</li>
+	<li>TESTOPIA_TESTCASE_SCRIPT</li>
+	<li>TESTOPIA_TESTCASE_ALIAS</li>
+  </ul>
+</div>

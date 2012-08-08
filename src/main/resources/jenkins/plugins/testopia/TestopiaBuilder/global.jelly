@@ -9,7 +9,7 @@
             <f:textbox name="Testopia.name" value="${inst.name}" 
                checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
-          <f:entry title="URL" help="${rootURL}/../plugin/Testopia/help-TestopiaUrl.html">
+          <f:entry title="URL" help="${rootURL}/../plugin/testopia/help-testopiaUrl.html">
             <f:textbox name="Testopia.url" value="${inst.url}" 
             default="http://localhost/bugzilla/xmlrpc.cgi" 
             checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
@@ -23,7 +23,7 @@
             checkUrl="'${rootURL}/builder/TestopiaBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
           <f:advanced>    
-              <f:entry title="${%Testopia connection properties}">
+              <f:entry title="${%Testopia connection properties}" help="${rootURL}/../plugin/testopia/help-properties.html">
                   <f:textbox name="Testopia.properties" value="${inst.properties}" />
               </f:entry>
           </f:advanced>

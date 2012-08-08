@@ -2,7 +2,7 @@
 
   <f:block><p><strong>Testopia Configuration</strong></p></f:block>
 
-  <f:entry title="${%Testopia Version}">
+  <f:entry title="${%Testopia Version}" help="${rootURL}/../plugin/testopia/help-testopiaVersion.html">
     <select class="setting-input" name="TestopiaBuilder.testopiaInstallationName">
     <option>(Select one)</option>
     <j:forEach var="inst" items="${descriptor.installations}">
@@ -11,29 +11,29 @@
   </select>
   </f:entry>
 
-  <f:entry title="${%Test Run ID}">
+  <f:entry title="${%Test Run ID}" help="${rootURL}/../plugin/testopia/help-runId.html">
     <f:textbox name="TestopiaBuilder.testRunId" value="${instance.testRunId}" />
   </f:entry>
   
   <f:block><p><strong>Test Execution</strong></p></f:block>
   
-  <f:entry title="${%Single Test Build Steps}">
+  <f:entry title="${%Single Test Build Steps}" help="${rootURL}/../plugin/testopia/help-singleBuildSteps.html">
     <f:hetero-list name="singleBuildSteps" targetType="${descriptor.testopiaBuildType}"
        descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
        addCaption="Add action" hasHeader="true"/>
   </f:entry>
-  <f:entry title="${%Iterative Test Build Steps}">
+  <f:entry title="${%Iterative Test Build Steps}" help="${rootURL}/../plugin/testopia/help-iterativeBuildSteps.html">
     <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testopiaBuildType}"
        descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
        addCaption="Add action" hasHeader="true"/>
   </f:entry>
   <f:advanced>
-      <f:entry title="${%Before iterating all test cases Build Steps}">
+      <f:entry title="${%Before iterating all test cases Build Steps}" help="${rootURL}/../plugin/testopia/help-beforeIteratingAllTestCasesBuildSteps.html">
         <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
            addCaption="Add action" hasHeader="true"/>
       </f:entry>
-      <f:entry title="${%After iterating all test cases Build Steps}">
+      <f:entry title="${%After iterating all test cases Build Steps}" help="${rootURL}/../plugin/testopia/help-afterIteratingAllTestCasesBuildSteps.html">
         <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testopiaBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
            addCaption="Add action" hasHeader="true"/>

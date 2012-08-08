@@ -94,6 +94,20 @@ public class TestopiaSite {
 	public void updateTestCase(TestCaseWrapper tc) {
 		if(tc.getStatusId() != Status.IDLE.getValue()) {
 			this.api.update(tc, tc.getRunId(), tc.getBuildId(), tc.getEnvId());
+			Status executionStatus = Status.get(tc.getStatusId());
+			switch(executionStatus) {
+			case PASSED:
+				report.setPassed(report.getPassed()+1);
+				break;
+			case FAILED:
+				report.setFailed(report.getFailed()+1);
+				break;
+			case BLOCKED:
+				report.setBlocked(report.getBlocked()+1);
+				break;
+			default:
+				break;
+			}
 			report.addTestCase(tc);
 		}
 	}
