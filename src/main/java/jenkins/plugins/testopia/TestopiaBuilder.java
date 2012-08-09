@@ -351,8 +351,7 @@ public class TestopiaBuilder extends Builder {
 					}
 				});
 				for (BuildStep b : iterativeBuildSteps) {
-					final boolean success = b
-							.perform(build, launcher, listener);
+					final boolean success = b.perform(build, launcher, listener);
 					if(!success) {
 						build.setResult(Result.UNSTABLE);
 					}

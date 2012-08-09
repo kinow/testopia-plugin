@@ -92,7 +92,7 @@ public class TestopiaSite {
 	 * @param tc
 	 */
 	public void updateTestCase(TestCaseWrapper tc) {
-		if(tc.getStatusId() != Status.IDLE.getValue()) {
+		if(tc.getStatusId() != null) { // twas: Status.IDLE.getValue()
 			this.api.update(tc, tc.getRunId(), tc.getBuildId(), tc.getEnvId());
 			Status executionStatus = Status.get(tc.getStatusId());
 			switch(executionStatus) {
