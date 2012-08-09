@@ -7,4 +7,4 @@ bugs, compatibility, basic usage and other details.
 
 Last build status :
 
-[![Build Status](https://buildhive.cloudbees.com/job/jenkinsci/job/testopia/badge/icon)](https://buildhive.cloudbees.com/job/jenkinsci/job/testopia/)
+[![Build Status](https://buildhive.cloudbees.com/job/kinow/job/testopia-plugin/badge/icon)](https://buildhive.cloudbees.com/job/kinow/job/testopia-plugin/)
