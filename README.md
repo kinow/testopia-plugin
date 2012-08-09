@@ -7,4 +7,4 @@ bugs, compatibility, basic usage and other details.
 
 Last build status :
 
-[![Build Status](https://buildhive.cloudbees.com/job/jenkinsci/job/testthemall/badge/icon)](https://buildhive.cloudbees.com/job/jenkinsci/job/testthemall/)
+[![Build Status](https://buildhive.cloudbees.com/job/jenkinsci/job/testopia/badge/icon)](https://buildhive.cloudbees.com/job/jenkinsci/job/testopia/)
