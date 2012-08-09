@@ -9,12 +9,13 @@
 
 	        <!--st:include page="/tabview/main.jelly" /-->
 	        <table>
+	        
+            <tr>
+            <td>${%Run Id}: </td><td><b>${it.report.runId}</b></td>
+            </tr>
+            
 	        <tr>
 	        <td>${%Build Id}: </td><td><b>${it.report.buildId}</b></td>
-	        </tr>
-	        
-	        <tr>
-	        <td>${%Run Id}: </td><td><b>${it.report.runId}</b></td>
 	        </tr>
 	        
 	        <tr>

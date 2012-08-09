@@ -75,7 +75,7 @@ public class Utils {
 	 */
 	public static String createReportSummary(Report report, Report previous) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>Run "+report.getRunId()+"</b></p>");
+		builder.append("<p><b>Run "+report.getRunId()+"</b></p>"); 
 		builder.append("<p><b>Build "+report.getBuildId()+"</b></p>");
 		builder.append("<p><b>Environment "+report.getEnvId()+"</b></p>");
 		builder.append("<p><a href=\"" + TestopiaBuildAction.URL_NAME + "\">");
