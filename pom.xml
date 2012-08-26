@@ -235,8 +235,8 @@
   </organization>
   <scm>
   	<url>https://github.com/jenkinsci/testopia-plugin.git</url>
-  	<connection>git://github.com/jenkinsci/testopia-plugin.git</connection>
-  	<developerConnection>git@github.com:jenkinsci/testopia-plugin.git</developerConnection>
+  	<connection>scm:git:git://github.com/jenkinsci/testopia-plugin.git</connection>
+  	<developerConnection>scm:git:git@github.com:jenkinsci/testopia-plugin.git</developerConnection>
   </scm>
   <properties>
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
