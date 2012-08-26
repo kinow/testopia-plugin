@@ -8,7 +8,7 @@
 
   <groupId>jenkins.plugins.testopia</groupId>
   <artifactId>testopia</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>hpi</packaging>
   
   <dependencies>
@@ -200,7 +200,7 @@
                                 		</goals>
                                 	</pluginExecutionFilter>
                                 	<action>
-                                		<ignore></ignore>
+                                		<ignore />
                                 	</action>
                                 </pluginExecution>
                             </pluginExecutions>
