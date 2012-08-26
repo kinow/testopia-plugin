@@ -15,9 +15,9 @@
     <dependency>
         <groupId>testopia</groupId>
         <artifactId>testopia</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/testopia-java-driver-0.1-SNAPSHOT.jar</systemPath>        
+        <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/testopia-java-driver-0.1.jar</systemPath>        
     </dependency>
     <dependency>
         <groupId>commons-configuration</groupId>
