@@ -69,19 +69,20 @@ public class TestopiaSite {
 	}
 	/**
 	 * Filter an array of test cases for automated test cases only.
-	 * @param testCaseRun 
+	 * @param testRun 
 	 * @param testCases array of test cases
 	 * @return filtered array of automated test cases
 	 */
-	public TestCaseWrapper[] getTestCases(TestRun testCaseRun, TestCase[] testCases) {
+	public TestCaseWrapper[] getTestCases(TestRun testRun, TestCase[] testCases) {
 		List<TestCaseWrapper> automatedTestCases = new ArrayList<TestCaseWrapper>();
 		if(testCases != null) {
 			for(TestCase testCase : testCases) {
 				if(testCase != null && testCase.getAutomated()) {
 					TestCaseWrapper tcw = new TestCaseWrapper(testCase);
-					tcw.setBuildId(Integer.parseInt(testCaseRun.getBuild()));
-					tcw.setEnvId(Integer.parseInt(testCaseRun.getEnvironment()));
-					tcw.setRunId(testCaseRun.getId());
+					tcw.setBuildId(Integer.parseInt(testRun.getBuild()));
+					tcw.setEnvId(Integer.parseInt(testRun.getEnvironment()));
+					tcw.setRunId(testRun.getId());
+					tcw.setTestRun(testRun);
 					automatedTestCases.add(tcw);
 				} // else drop it
 			}

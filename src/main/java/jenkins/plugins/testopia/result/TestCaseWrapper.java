@@ -26,6 +26,7 @@ package jenkins.plugins.testopia.result;
 import java.util.Date;
 
 import org.mozilla.testopia.model.TestCase;
+import org.mozilla.testopia.model.TestRun;
 
 /**
  * Wrapper for Testopia test case.
@@ -49,6 +50,10 @@ public class TestCaseWrapper extends TestCase {
 	 * Environment ID.
 	 */
 	private Integer envId;
+	/**
+	 * Test Run.
+	 */
+	private TestRun testRun;
 	/**
 	 * No args constructor.
 	 */
@@ -199,5 +204,17 @@ public class TestCaseWrapper extends TestCase {
 	 */
 	public void setEnvId(Integer envId) {
 		this.envId = envId;
+	}
+	/**
+	 * @return the testRun
+	 */
+	public TestRun getTestRun() {
+		return testRun;
+	}
+	/**
+	 * @param testRun the testRun to set
+	 */
+	public void setTestRun(TestRun testRun) {
+		this.testRun = testRun;
 	}
 }

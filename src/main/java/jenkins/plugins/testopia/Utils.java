@@ -31,7 +31,7 @@ import java.util.Map;
 import jenkins.plugins.testopia.result.TestCaseWrapper;
 
 import org.mozilla.testopia.model.Status;
-import org.mozilla.testopia.model.TestCase;
+import org.mozilla.testopia.model.TestRun;
 
 /**
  * Utility methods.
@@ -43,14 +43,43 @@ public class Utils {
 	private Utils() {};
 	// Environment Variables names.
 	private static final String TESTOPIA_TESTCASE_ID_ENVVAR = "TESTOPIA_TESTCASE_ID";
+	private static final String TESTOPIA_TESTCASE_RUN_ID_ENVVAR = "TESTOPIA_TESTCASE_RUN_ID";
+	private static final String TESTOPIA_TESTCASE_BUILD_ID_ENVVAR = "TESTOPIA_TESTCASE_BUILD_ID";
 	private static final String TESTOPIA_TESTCASE_SCRIPT_ENVVAR = "TESTOPIA_TESTCASE_SCRIPT";
 	private static final String TESTOPIA_TESTCASE_ALIAS_ENVVAR = "TESTOPIA_TESTCASE_ALIAS";
+	private static final String TESTOPIA_TESTCASE_ARGUMENTS_ENVVAR = "TESTOPIA_TESTCASE_ARGUMENTS";
+	private static final String TESTOPIA_TESTCASE_REQUIREMENT_ENVVAR = "TESTOPIA_TESTCASE_REQUIREMENT";
+	private static final String TESTOPIA_TESTCASE_SORT_KEY_ENVVAR = "TESTOPIA_TESTCASE_SORT_KEY";
+	private static final String TESTOPIA_TESTCASE_SUMMARY_ENVVAR = "TESTOPIA_TESTCASE_SUMMARY";
+	private static final String TESTOPIA_TESTCASE_AUTHOR_ID_ENVVAR = "TESTOPIA_TESTCASE_AUTHOR_ID";
+	private static final String TESTOPIA_TESTCASE_CATEGORY_ID_ENVVAR = "TESTOPIA_TESTCASE_CATEGORY_ID";
+	private static final String TESTOPIA_TESTCASE_DEFAULT_TESTER_ID_ENVVAR = "TESTOPIA_TESTCASE_DEFAULT_TESTER_ID";
+	private static final String TESTOPIA_TESTCASE_PRIORITY_ID_ENVVAR = "TESTOPIA_TESTCASE_PRIORITY_ID";
+	private static final String TESTOPIA_TESTCASE_STATUS_ID_ENVVAR = "TESTOPIA_TESTCASE_STATUS_ID";
+	private static final String TESTOPIA_TESTCASE_AUTOMATED_ENVVAR = "TESTOPIA_TESTCASE_AUTOMATED";
+	private static final String TESTOPIA_TESTCASE_CREATION_DATE_ENVVAR = "TESTOPIA_TESTCASE_CREATION_DATE";
+	private static final String TESTOPIA_TESTCASE_ESTIMATED_TIME_ENVVAR = "TESTOPIA_TESTCASE_ESTIMATED_TIME";
+	private static final String TESTOPIA_TESTCASE_ENV_ID_ENVVAR = "TESTOPIA_TESTCASE_ENV_ID";
+	/* --- */
+	private static final String TESTOPIA_TESTRUN_ID_ENVVAR = "TESTOPIA_TESTRUN_ID";
+	private static final String TESTOPIA_TESTRUN_BUILD_ENVVAR = "TESTOPIA_TESTRUN_BUILD";
+	private static final String TESTOPIA_TESTRUN_ENVIRONMENT_ENVVAR = "TESTOPIA_TESTRUN_ENVIRONMENT";
+	private static final String TESTOPIA_TESTRUN_MANAGER_ENVVAR = "TESTOPIA_TESTRUN_MANAGER";
+	private static final String TESTOPIA_TESTRUN_NOTES_ENVVAR = "TESTOPIA_TESTRUN_NOTES";
+	private static final String TESTOPIA_TESTRUN_PRODUCT_VERSION_ENVVAR = "TESTOPIA_TESTRUN_PRODUCT_VERSION";
+	private static final String TESTOPIA_TESTRUN_SUMMARY_ENVVAR = "TESTOPIA_TESTRUN_SUMMARY";
+	private static final String TESTOPIA_TESTRUN_CASES_ENVVAR = "TESTOPIA_TESTRUN_CASES";
+	private static final String TESTOPIA_TESTRUN_PLAN_ID_ENVVAR = "TESTOPIA_TESTRUN_PLAN_ID";
+	private static final String TESTOPIA_TESTRUN_PLAN_TEXT_VERSION_ENVVAR = "TESTOPIA_TESTRUN_PLAN_TEXT_VERSION";
+	private static final String TESTOPIA_TESTRUN_STATUS_ENVVAR = "TESTOPIA_TESTRUN_STATUS";
+	private static final String TESTOPIA_TESTRUN_TARGET_COMPLETION_ENVVAR = "TESTOPIA_TESTRUN_TARGET+COMPLETION";
+	private static final String TESTOPIA_TESTRUN_PLAN_TARGET_PASS_ENVVAR = "TESTOPIA_TESTRUN_PLAN_TARGET_PASS";
 	/**
 	 * Creates EnvVars for a Test Case.
 	 * @param testCase test Case
 	 * @return EnvVars (environment variables)
 	 */
-	public static EnvVars buildTestCaseEnvVars(TestCase testCase) {
+	public static EnvVars buildTestCaseEnvVars(TestCaseWrapper testCase) {
 		// Build environment variables list
 		Map<String, String> envVars = createEnvironmentVariables(testCase);
 		final EnvVars buildEnvironment = new EnvVars(envVars);
@@ -61,11 +90,40 @@ public class Utils {
 	 * @param testCase test Case.
 	 * @return Map (name, value) of environment variables.
 	 */
-	public static Map<String, String> createEnvironmentVariables(TestCase testCase) {
+	public static Map<String, String> createEnvironmentVariables(TestCaseWrapper testCase) {
 		Map<String, String> envVar = new HashMap<String, String>();
 		envVar.put(TESTOPIA_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
 		envVar.put(TESTOPIA_TESTCASE_SCRIPT_ENVVAR, ""+testCase.getScript());
 		envVar.put(TESTOPIA_TESTCASE_ALIAS_ENVVAR, ""+testCase.getAlias());
+		envVar.put(TESTOPIA_TESTCASE_ARGUMENTS_ENVVAR, ""+testCase.getArguments());
+		envVar.put(TESTOPIA_TESTCASE_REQUIREMENT_ENVVAR, ""+testCase.getRequirement());
+		envVar.put(TESTOPIA_TESTCASE_SORT_KEY_ENVVAR, ""+testCase.getSortKey());
+		envVar.put(TESTOPIA_TESTCASE_SUMMARY_ENVVAR, ""+testCase.getSummary());
+		envVar.put(TESTOPIA_TESTCASE_AUTHOR_ID_ENVVAR, ""+testCase.getAuthorId());
+		envVar.put(TESTOPIA_TESTCASE_CATEGORY_ID_ENVVAR, ""+testCase.getCategoryId());
+		envVar.put(TESTOPIA_TESTCASE_DEFAULT_TESTER_ID_ENVVAR, ""+testCase.getDefaultTesterId());
+		envVar.put(TESTOPIA_TESTCASE_PRIORITY_ID_ENVVAR, ""+testCase.getPriorityId());
+		envVar.put(TESTOPIA_TESTCASE_STATUS_ID_ENVVAR, ""+testCase.getStatusId());
+		envVar.put(TESTOPIA_TESTCASE_AUTOMATED_ENVVAR, ""+testCase.getAutomated());
+		envVar.put(TESTOPIA_TESTCASE_CREATION_DATE_ENVVAR, ""+testCase.getCreationDate());
+		envVar.put(TESTOPIA_TESTCASE_ESTIMATED_TIME_ENVVAR, ""+testCase.getEstimatedTime());
+		envVar.put(TESTOPIA_TESTCASE_RUN_ID_ENVVAR, ""+testCase.getRunId());
+		envVar.put(TESTOPIA_TESTCASE_BUILD_ID_ENVVAR, ""+testCase.getBuildId());
+		envVar.put(TESTOPIA_TESTCASE_ENV_ID_ENVVAR, ""+testCase.getEnvId());
+		TestRun testRun = testCase.getTestRun();
+		envVar.put(TESTOPIA_TESTRUN_ID_ENVVAR, ""+testRun.getId());
+		envVar.put(TESTOPIA_TESTRUN_BUILD_ENVVAR, ""+testRun.getBuild());
+		envVar.put(TESTOPIA_TESTRUN_ENVIRONMENT_ENVVAR, ""+testRun.getEnvironment());
+		envVar.put(TESTOPIA_TESTRUN_MANAGER_ENVVAR, ""+testRun.getManager());
+		envVar.put(TESTOPIA_TESTRUN_NOTES_ENVVAR, ""+testRun.getNotes());
+		envVar.put(TESTOPIA_TESTRUN_PRODUCT_VERSION_ENVVAR, ""+testRun.getProductVersion());
+		envVar.put(TESTOPIA_TESTRUN_SUMMARY_ENVVAR, ""+testRun.getSummary());
+		envVar.put(TESTOPIA_TESTRUN_CASES_ENVVAR, ""+testRun.getCases());
+		envVar.put(TESTOPIA_TESTRUN_PLAN_ID_ENVVAR, ""+testRun.getPlanId());
+		envVar.put(TESTOPIA_TESTRUN_PLAN_TEXT_VERSION_ENVVAR, ""+testRun.getPlanTextVersion());
+		envVar.put(TESTOPIA_TESTRUN_STATUS_ENVVAR, ""+testRun.getStatus());
+		envVar.put(TESTOPIA_TESTRUN_TARGET_COMPLETION_ENVVAR, ""+testRun.getTargetCompletion());
+		envVar.put(TESTOPIA_TESTRUN_PLAN_TARGET_PASS_ENVVAR, ""+testRun.getTargetPass());
 		return envVar;
 	}
 	/**

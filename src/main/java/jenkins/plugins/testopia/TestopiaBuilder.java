@@ -50,7 +50,6 @@ import jenkins.plugins.testopia.result.TestCaseWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.mozilla.testopia.TestopiaAPI;
-import org.mozilla.testopia.model.TestCase;
 import org.mozilla.testopia.model.TestRun;
 
 /**
@@ -310,7 +309,7 @@ public class TestopiaBuilder extends Builder {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	protected void executeIterativeBuildSteps(TestCase[] testCases,
+	protected void executeIterativeBuildSteps(TestCaseWrapper[] testCases,
 			AbstractBuild<?, ?> build,
 			Launcher launcher, BuildListener listener) throws IOException,
 			InterruptedException {
@@ -323,7 +322,7 @@ public class TestopiaBuilder extends Builder {
 			}
 		}
 		if (iterativeBuildSteps != null) {
-			for (TestCase automatedTestCase : testCases) {
+			for (TestCaseWrapper automatedTestCase : testCases) {
 				if(automatedTestCase == null) {
 					continue;
 				}
