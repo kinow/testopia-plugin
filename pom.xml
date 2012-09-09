@@ -47,15 +47,15 @@
   </pluginRepositories>
   
   <developers>
-    <developer>
-         <email>florijn.peter@gmail.com</email>
-         <id>tooh</id>
-         <name>Peter Florijn</name>
-         <timezone>+1</timezone>
-         <roles>
-             <role>developer</role>
-         </roles>
-     </developer>
+      <developer>
+          <email>florijn.peter@gmail.com</email>
+          <id>tooh</id>
+          <name>Peter Florijn</name>
+          <timezone>+1</timezone>
+          <roles>
+              <role>developer</role>
+          </roles>
+     </developer>
      <developer>
          <id>kinow</id>
          <name>Bruno P. Kinoshita</name>
