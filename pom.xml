@@ -11,6 +11,62 @@
   <version>1.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   
+  <name>Jenkins Testopia Plug-in</name>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Testopia+Plugin</url>
+  <description>Jenkins Testopia Plug-in</description>
+  <inceptionYear>2012</inceptionYear>
+  
+  <organization>
+    <name>Jenkins CI</name>
+    <url>http://www.jenkins-ci.org</url>
+  </organization>
+  
+  <scm>
+    <url>https://github.com/jenkinsci/testopia-plugin.git</url>
+    <connection>scm:git:git://github.com/jenkinsci/testopia-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/testopia-plugin.git</developerConnection>
+  </scm>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <developers>
+    <developer>
+         <email>florijn.peter@gmail.com</email>
+         <id>tooh</id>
+         <name>Peter Florijn</name>
+         <timezone>+1</timezone>
+         <roles>
+             <role>developer</role>
+         </roles>
+     </developer>
+     <developer>
+         <id>kinow</id>
+         <name>Bruno P. Kinoshita</name>
+         <email>brunodepaulak@yahoo.com.br</email>
+         <timezone>-3</timezone>
+         <roles>
+             <role>developer</role>
+         </roles>
+     </developer>
+  </developers>
+  
   <dependencies>
     <dependency>
         <groupId>testopia</groupId>
@@ -211,34 +267,4 @@
         </pluginManagement>
     </build>
 
-  <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  <name>Jenkins Testopia Plug-in</name>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Testopia+Plugin</url>
-  <description>Jenkins Testopia Plug-in</description>
-  <inceptionYear>2012</inceptionYear>
-  <organization>
-  	<name>Jenkins CI</name>
-  	<url>http://www.jenkins-ci.org</url>
-  </organization>
-  <scm>
-  	<url>https://github.com/jenkinsci/testopia-plugin.git</url>
-  	<connection>scm:git:git://github.com/jenkinsci/testopia-plugin.git</connection>
-  	<developerConnection>scm:git:git@github.com:jenkinsci/testopia-plugin.git</developerConnection>
-  </scm>
-  <properties>
-  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 </project>
