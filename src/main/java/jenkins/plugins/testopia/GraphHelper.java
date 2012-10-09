@@ -8,6 +8,8 @@ import hudson.util.StackedAreaRenderer2;
 import java.awt.Color;
 import java.io.IOException;
 
+import jenkins.plugins.testopia.util.Messages;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -52,7 +54,7 @@ public class GraphHelper
       final JFreeChart chart = ChartFactory.createStackedAreaChart(
           null,                     // chart title
           null,                     // unused
-          "Testopia Tests Count",   // range axis label
+          Messages.Testopia_GraphHelper_TestsCount(),   // range axis label
           dataset,                  // data
           PlotOrientation.VERTICAL, // orientation
           true,                     // include legend

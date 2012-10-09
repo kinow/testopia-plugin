@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jenkins.plugins.testopia.result.TestCaseWrapper;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.mozilla.testopia.model.Status;
 import org.mozilla.testopia.model.TestRun;
@@ -133,9 +134,9 @@ public class Utils {
 	 */
 	public static String createReportSummary(Report report, Report previous) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>Run "+report.getRunId()+"</b></p>"); 
-		builder.append("<p><b>Build "+report.getBuildId()+"</b></p>");
-		builder.append("<p><b>Environment "+report.getEnvId()+"</b></p>");
+		builder.append(Messages.Testopia_Utils_Run(report.getRunId())); 
+		builder.append(Messages.Testopia_Utils_Build(report.getBuildId()));
+		builder.append(Messages.Testopia_Utils_Environment(report.getEnvId()));
 		builder.append("<p><a href=\"" + TestopiaBuildAction.URL_NAME + "\">");
 		
 		Integer total = report.getTestsTotal();
@@ -149,11 +150,12 @@ public class Utils {
 		Integer notRun = report.getNotRun();
 		Integer previousNotRun = previous != null ? previous.getNotRun() : notRun;
 		
-		builder.append("Total of " +(total + getPlusSignal(total, previousTotal))+ " " +
-				"tests</a>. Where "+(passed + getPlusSignal(passed, previousPassed))+" " +
-				"passed, "+(failed + getPlusSignal(failed, previousFailed))+" failed, " +
-				""+(blocked + getPlusSignal(blocked, previousBlocked))+" were blocked " +
-				"and "+(notRun + getPlusSignal(notRun, previousNotRun))+" were not executed.");
+		builder.append(Messages.Testopia_Utils_Totals(
+				(total + getPlusSignal(total, previousTotal)),
+				(passed + getPlusSignal(passed, previousPassed)), 
+				(failed + getPlusSignal(failed, previousFailed)), 
+				(blocked + getPlusSignal(blocked, previousBlocked)), 
+				(notRun + getPlusSignal(notRun, previousNotRun))));
 		
         builder.append("</p>");
 		
@@ -184,7 +186,7 @@ public class Utils {
 			Report previousReport) {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("<p>Summary details</p>");
+		builder.append(Messages.Testopia_Utils_Summary());
 		builder.append("<table border=\"1\">\n");
 		builder.append("<tr><th>");
 		builder.append("Test Case ID");
@@ -214,16 +216,16 @@ public class Utils {
 				: Status.IDLE.getValue()));
 		String executionStatusTextColored = "Undefined";
 		if (executionStatus == Status.FAILED) {
-			executionStatusTextColored = "<span style='color: red'>Failed</span>";
+			executionStatusTextColored = Messages.Testopia_Utils_Failed();
 		}
 		if (executionStatus == Status.PASSED) {
-			executionStatusTextColored = "<span style='color: green'>Passed</span>";
+			executionStatusTextColored = Messages.Testopia_Utils_Passed();
 		}
 		if (executionStatus == Status.BLOCKED) {
-			executionStatusTextColored = "<span style='color: yellow'>Blocked</span>";
+			executionStatusTextColored = Messages.Testopia_Utils_Blocked();
 		}
 		if (executionStatus == Status.IDLE) {
-			executionStatusTextColored = "<span style='color: gray'>Not Run</span>";
+			executionStatusTextColored = Messages.Testopia_Utils_NotRun();
 		}
 		return executionStatusTextColored;
 	}

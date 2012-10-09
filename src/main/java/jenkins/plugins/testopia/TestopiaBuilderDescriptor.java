@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jenkins.plugins.testopia.result.ResultSeeker;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
@@ -65,7 +66,7 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 	}
 	@Override
 	public String getDisplayName() {
-		return "Invoke Testopia";
+		return Messages.Testopia_BuilderDescriptor_InvokeTestopia();
 	}
 	/**
 	 * @return the installations
@@ -138,7 +139,7 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 	public FormValidation doCheckMandatory(@QueryParameter String value) {
 		FormValidation returnValue = FormValidation.ok();
 		if (StringUtils.isBlank( value )) {
-			returnValue = FormValidation.error( "Required value." );
+			returnValue = FormValidation.error(Messages.Testopia_BuilderDescriptor_Required());
 		}
 		return returnValue;
 	}

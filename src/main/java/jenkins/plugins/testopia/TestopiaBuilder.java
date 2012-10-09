@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import jenkins.plugins.testopia.result.ResultSeeker;
 import jenkins.plugins.testopia.result.ResultSeekerException;
 import jenkins.plugins.testopia.result.TestCaseWrapper;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -199,13 +200,13 @@ public class TestopiaBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
-		listener.getLogger().println("Connecting to Testopia to retrieve automated test cases.");
+		listener.getLogger().println(Messages.Testopia_Builder_Connecting());
 		TestopiaInstallation installation = DESCRIPTOR.getInstallationByName(this.testopiaInstallationName);
 		if(installation == null) {
-			throw new AbortException("Invalid Testopia installation.");
+			throw new AbortException(Messages.Testopia_Builder_InvalidInstallation());
 		}
 		if(StringUtils.isNotBlank(installation.getProperties())) {
-			listener.getLogger().println("Preparing Testopia connection properties.");
+			listener.getLogger().println(Messages.Testopia_Builder_PreparingConnectionProperties());
 			setProperties(installation.getProperties(), listener);
 		}
 		TestopiaAPI api = new TestopiaAPI(new URL(installation.getUrl()));
@@ -217,44 +218,44 @@ public class TestopiaBuilder extends Builder {
 		}
 		//TestRun testRun = testRunSvc.get(this.getTestRunId());
 		if(LOGGER.isLoggable(Level.FINE)) {
-			LOGGER.log(Level.FINE, "Filtering for automated test cases...");
+			LOGGER.log(Level.FINE, Messages.Testopia_Builder_Filtering());
 		}
 		TestRun testCaseRun = api.getTestRun(this.getTestRunId());
 		TestopiaSite testopia = new TestopiaSite(api);
 		TestCaseWrapper[] testCases = testopia.getTestCases(testCaseRun, api.getTestCases(this.getTestRunId()));
 		if(LOGGER.isLoggable(Level.FINE)) {
 			for(TestCaseWrapper tc : testCases) {
-				LOGGER.log(Level.FINE, "Testopia automated test case ID [" + tc.getId() + "], summary [" +tc.getSummary()+ "]");
+				LOGGER.log(Level.FINE, Messages.Testopia_Builder_AutomatedTestCase(tc.getId(), tc.getSummary()));
 			}
 		}
 		// sort and filter test cases
-		listener.getLogger().println("Executing single build steps");
+		listener.getLogger().println(Messages.Testopia_Builder_SingleBuildSteps());
 		this.executeSingleBuildSteps(build, launcher, listener);
-		listener.getLogger().println("Executing iterative build steps");
+		listener.getLogger().println(Messages.Testopia_Builder_IterativeBuildSteps());
 		this.executeIterativeBuildSteps(testCases, build, launcher, listener);
 		
 		// Here we search for test results. The return if a wrapped Test Case
 		// that
 		// contains attachments, platform and notes.
 		try {
-			listener.getLogger().println("Seeking test results");
+			listener.getLogger().println(Messages.Testopia_Builder_Seeking());
 			
 			if(getResultSeekers() != null) {
 				for (ResultSeeker resultSeeker : getResultSeekers()) {
-					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
+					LOGGER.log(Level.INFO, Messages.Testopia_Builder_SeekingDetails(resultSeeker.getDescriptor().getDisplayName()));
 					resultSeeker.seek(testCases, build, launcher, listener, testopia);
 				}
 			}
 		} catch (ResultSeekerException trse) {
 			trse.printStackTrace(listener.fatalError(trse.getMessage()));
-			throw new AbortException("Error seeking test results: " + trse.getMessage());
+			throw new AbortException(Messages.Testopia_Builder_SeekingError(trse.getMessage()));
 		}
 	
 		// This report is used to generate the graphs and to store the list of
 		// test cases with each found status.
 		final Report report = testopia.getReport();
 		
-		listener.getLogger().println("Found " + report.getTestsTotal() + " test results");
+		listener.getLogger().println(Messages.Testopia_Builder_Found(report.getTestsTotal()));
 		
 		final TestopiaResult result = new TestopiaResult(report, build);
 		final TestopiaBuildAction buildAction = new TestopiaBuildAction(build, result);
@@ -268,7 +269,7 @@ public class TestopiaBuilder extends Builder {
 			}
 		}
 
-		LOGGER.log(Level.INFO, "Testopia builder finished");
+		LOGGER.log(Level.INFO, Messages.Testopia_Builder_Finished());
 		
 		// end
 		return Boolean.TRUE;
@@ -327,8 +328,8 @@ public class TestopiaBuilder extends Builder {
 					continue;
 				}
 				if(LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.log(Level.FINE, "Executing iterative build step");
-					LOGGER.log(Level.FINE, "TestCase: id["+automatedTestCase.getId()+"], script["+automatedTestCase.getScript()+"]");
+					LOGGER.log(Level.FINE, Messages.Testopia_Builder_IterativeBuildStep());
+					LOGGER.log(Level.FINE, Messages.Testopia_Builder_AutomatedTestCase(automatedTestCase.getId(), automatedTestCase.getScript()));
 				}
 				final EnvVars iterativeEnvVars = Utils.buildTestCaseEnvVars(automatedTestCase);
 				build.addAction(new EnvironmentContributingAction() {
@@ -413,9 +414,9 @@ public class TestopiaBuilder extends Builder {
 
 			if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
 				if (key.contains(BASIC_HTTP_PASSWORD)) {
-					listener.getLogger().println("Setting key " + key + "=********");
+					listener.getLogger().println(Messages.Testopia_Builder_Password(key));
 				} else {
-					listener.getLogger().println("Setting key " + key + "=" + value);
+					listener.getLogger().println(Messages.Testopia_Builder_Setting(key, value));
 				}
 				try {
 					System.setProperty(key, value);

@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -150,7 +151,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		
 		if(LOGGER.isLoggable(Level.FINE)) {
 			for(String fileName : fileNames) {
-				LOGGER.log(Level.FINE, "Test result file found: " + fileName);
+				LOGGER.log(Level.FINE, Messages.Testopia_ResultSeeker_TestResultFound(fileName));
 			}
 		}
 		return fileNames;

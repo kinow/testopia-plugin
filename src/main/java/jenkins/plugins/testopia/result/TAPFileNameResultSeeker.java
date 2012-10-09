@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.mozilla.testopia.model.Status;
@@ -76,7 +77,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "TAP file name"; // TBD: i18n
+			return Messages.Testopia_TAPResultSeeker_TAPFileName();
 		}
 	}
 
@@ -194,19 +195,4 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 
 		return r;
 	}
-//
-//	/**
-//	 * Retrieves notes for a TAP test set.
-//	 * 
-//	 * @param testSet
-//	 *            TAP test set.
-//	 * @return notes for a TAP test set.
-//	 */
-//	private String getTapNotes(TestSet testSet) {
-//		StringBuilder notes = new StringBuilder();
-//
-//		notes.append(testSet.toString());
-//
-//		return notes.toString();
-//	}
 }
