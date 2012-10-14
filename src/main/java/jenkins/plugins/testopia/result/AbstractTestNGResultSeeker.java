@@ -23,21 +23,7 @@
  */
 package jenkins.plugins.testopia.result;
 
-import hudson.FilePath.FileCallable;
-import hudson.model.BuildListener;
-import hudson.model.Result;
-import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.TestNGParser;
-import hudson.remoting.VirtualChannel;
-
-import java.io.File;
-import java.io.IOException;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -59,8 +45,8 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	private boolean markSkippedTestAsBlocked = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, includeNotes);
+	public AbstractTestNGResultSeeker(String includePattern, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
+		super(includePattern);
 		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
@@ -80,47 +66,4 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	public boolean isMarkSkippedTestAsBlocked() {
 		return markSkippedTestAsBlocked;
 	}
-	
-	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Suite suiteResult) {
-		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
-			try {
-				final int executionId = testlink.updateTestCase(automatedTestCase);
-				
-				if(executionId > 0 && this.isAttachTestNGXML()) {
-					Attachment attachment = build.getWorkspace().act( new FileCallable<Attachment>() {
-
-						private static final long serialVersionUID = -5411683541842375558L;
-
-						public Attachment invoke(File f,
-								VirtualChannel channel)
-								throws IOException,
-								InterruptedException {
-							
-							File reportFile = new File(suiteResult.getFile());
-							final Attachment attachment = new Attachment();
-							attachment.setContent(AbstractTestNGResultSeeker.this.getBase64FileContent(reportFile));
-							attachment.setDescription(reportFile.getName());
-							attachment.setFileName(reportFile.getName());
-							attachment.setFileSize(reportFile.length());
-							attachment.setFileType(TEXT_XML_CONTENT_TYPE);
-							attachment.setTitle(reportFile.getName());
-							
-							return attachment;
-						}
-					});
-					testlink.uploadAttachment(executionId, attachment);
-				}
-			} catch ( TestLinkAPIException te ) {
-				build.setResult(Result.UNSTABLE);
-				te.printStackTrace(listener.getLogger());
-			} catch (IOException e) {
-				build.setResult(Result.UNSTABLE);
-				e.printStackTrace(listener.getLogger());
-			} catch (InterruptedException e) {
-				build.setResult(Result.UNSTABLE);
-				e.printStackTrace(listener.getLogger());
-			}
-		}
-	}
-	
 }

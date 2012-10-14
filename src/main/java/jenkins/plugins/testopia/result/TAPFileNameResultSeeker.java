@@ -122,7 +122,8 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 					if(tapFileNameWithoutExtension.equals(value)) {
 						final Status status = this.getExecutionStatus(testSets.get(key));
 						automatedTestCase.setStatusId(status.getValue());
-						this.handleResult(automatedTestCase, build, listener, testopia, status, testSets, key);
+						
+						testopia.updateTestCase(automatedTestCase);
 					}
 				}
 			}
@@ -131,10 +132,6 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
 		}
-	}
-
-	private void handleResult(TestCaseWrapper tc, final AbstractBuild<?, ?> build, BuildListener listener, TestopiaSite testopia, Status status, final Map<String, TestSet> testSets, final String key) {
-		testopia.updateTestCase(tc);
 	}
 
 	/**

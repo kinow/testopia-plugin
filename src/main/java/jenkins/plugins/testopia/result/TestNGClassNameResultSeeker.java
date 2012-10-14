@@ -28,12 +28,6 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Class;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.Test;
-import hudson.plugins.testlink.testng.TestMethod;
-import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
 import java.io.File;
@@ -41,10 +35,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.plugins.testopia.TestopiaSite;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.mozilla.testopia.model.Status;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import com.tupilabs.testng.parser.Suite;
+import com.tupilabs.testng.parser.Test;
+import com.tupilabs.testng.parser.TestMethod;
 
 /**
  * <p>Seeks for test results matching each TestNG Class name with the key 
@@ -53,7 +52,7 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
  * <p>Skips TestNG Suite that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 3.1
+ * @since 1.2
  */
 public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	
@@ -61,13 +60,12 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 
 	/**
 	 * @param includePattern
-	 * @param keyCustomField
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGClassNameResultSeeker(String includePattern, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
+		super(includePattern, attachTestNGXML, markSkippedTestAsBlocked);
 	}
 	
 	@Extension
@@ -83,12 +81,9 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
-	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
+	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
+		listener.getLogger().println( "Looking for test results using TestNG class name" ); // TBD: i18n
 		try {
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
@@ -110,23 +105,12 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 			});
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {
-					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
+					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-							final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-							for(String value : commaSeparatedValues) {
-								if(clazz.getName().equals(value)) {
-									ExecutionStatus status = this.getExecutionStatus(clazz);
-									if(status != ExecutionStatus.NOT_RUN) {
-										automatedTestCase.addCustomFieldAndStatus(value, status);
-									}
-									
-									if(this.isIncludeNotes()) {
-										final String notes = this.getTestNGNotes(suite, clazz);
-										automatedTestCase.appendNotes(notes);
-									}
-									
-									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
-								}
+							if(clazz.getName().equals(automatedTestCase.getAlias())) {
+								Status status = this.getExecutionStatus(clazz);
+								automatedTestCase.setStatusId(status.getValue());
+								testopia.updateTestCase(automatedTestCase);
 							}
 						}
 					}
@@ -152,46 +136,21 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param suite
 	 * @return
 	 */
-	private ExecutionStatus getExecutionStatus(hudson.plugins.testlink.testng.Class clazz) {
+	private Status getExecutionStatus(com.tupilabs.testng.parser.Class clazz) {
 		for( TestMethod method : clazz.getTestMethods() ) {
 			if ( StringUtils.isNotBlank(method.getStatus()) ) {
 				if(method.getStatus().equals(FAIL)) {
-					return ExecutionStatus.FAILED; 
+					return Status.FAILED; 
 				} else if(method.getStatus().equals(SKIP)) {
 					if(this.isMarkSkippedTestAsBlocked()) { 
-						return ExecutionStatus.BLOCKED;
+						return Status.BLOCKED;
 					} else {
-						return ExecutionStatus.NOT_RUN;
+						return Status.IDLE;
 					}
 				}
 			}
 		}
-		return ExecutionStatus.PASSED;
+		return Status.PASSED;
 	}
 
-	/**
-	 * Retrieves notes for TestNG suite.
-	 * 
-	 * @param suite TestNG suite.
-	 * @param clazz TestNG test class.
-	 * @return notes for TestNG suite and test class.
-	 */
-	private String getTestNGNotes( Suite suite, Class clazz )
-	{
-		StringBuilder notes = new StringBuilder();
-		
-		notes.append( 
-				Messages.Results_TestNG_NotesForSuiteAndClass(
-						suite.getName(), 
-						suite.getDurationMs(), 
-						suite.getStartedAt(), 
-						suite.getFinishedAt(), suite.getTests().size(), 
-						clazz.getName(), 
-						clazz.getTestMethods().size()
-				)
-		);
-		
-		return notes.toString();
-	}
-	
 }
