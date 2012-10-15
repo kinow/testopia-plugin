@@ -8,7 +8,7 @@
 
   <groupId>jenkins.plugins.testopia</groupId>
   <artifactId>testopia</artifactId>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <packaging>hpi</packaging>
   
   <name>Jenkins Testopia Plug-in</name>
