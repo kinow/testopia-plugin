@@ -48,7 +48,7 @@ import org.kohsuke.stapler.QueryParameter;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 0.1
  */
-public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
+public class TestopiaBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
 	// exposed for Jelly
     public final Class<TestopiaBuilder> testopiaBuilderType	 = TestopiaBuilder.class;
@@ -142,6 +142,13 @@ public class TestopiaBuilderDescriptor extends Descriptor<Builder> {
 			returnValue = FormValidation.error(Messages.Testopia_BuilderDescriptor_Required());
 		}
 		return returnValue;
+	}
+	/* (non-Javadoc)
+	 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
+	 */
+	@Override
+	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+		return Boolean.TRUE;
 	}
 
 }
