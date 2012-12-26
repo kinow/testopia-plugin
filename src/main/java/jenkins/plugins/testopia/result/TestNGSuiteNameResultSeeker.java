@@ -52,7 +52,7 @@ import com.tupilabs.testng.parser.TestNGParser;
  * <p>Skips TestNG Suite that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.2
+ * @since 1.3
  */
 public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 
@@ -62,12 +62,11 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	
 	/**
 	 * @param includePattern
-	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
-		super(includePattern, attachTestNGXML, markSkippedTestAsBlocked);
+	public TestNGSuiteNameResultSeeker(String includePattern, boolean markSkippedTestAsBlocked) {
+		super(includePattern, markSkippedTestAsBlocked);
 	}
 	
 	@Extension

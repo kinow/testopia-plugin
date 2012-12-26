@@ -27,7 +27,7 @@ import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 3.1
+ * @since 1.3
  */
 public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
@@ -37,28 +37,15 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	public static final String FAIL = "FAIL";
 	public static final String SKIP = "SKIP";
 	
-	public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
-
 	protected final TestNGParser parser = new TestNGParser();
-	
-	private boolean attachTestNGXML = false;
 	
 	private boolean markSkippedTestAsBlocked = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
+	public AbstractTestNGResultSeeker(String includePattern, boolean markSkippedTestAsBlocked) {
 		super(includePattern);
-		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
 
-	public void setAttachTestNGXML(boolean attachTestNGXML) {
-		this.attachTestNGXML = attachTestNGXML;
-	}
-	
-	public boolean isAttachTestNGXML() {
-		return attachTestNGXML;
-	}
-	
 	public void setMarkSkippedTestAsBlocked(boolean markSkippedTestAsBlocked) {
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}

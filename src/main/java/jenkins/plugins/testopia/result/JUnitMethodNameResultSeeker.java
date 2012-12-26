@@ -26,9 +26,8 @@ package jenkins.plugins.testopia.result;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestResult;
@@ -36,9 +35,11 @@ import hudson.tasks.junit.CaseResult;
 
 import java.io.IOException;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.mozilla.testopia.model.Status;
 
 /**
  * <p>Seeks for test results matching each JUnit Case Result class name and method name with 
@@ -47,22 +48,18 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
  * <p>Skips JUnit Case Results that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @author Oliver Merkel - Merkel.Oliver at web.de
- * @author Michael van der Westhuizen - r1mikey at gmail.com
- * @since 3.3
+ * @since 1.3
  */
-public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
+public class JUnitMethodNameResultSeeker extends ResultSeeker {
 
 	private static final long serialVersionUID = -9198823056268332288L;
 
 	/**
 	 * @param includePattern Include pattern used when looking for results
-	 * @param keyCustomField Key custom field to match against the results
-	 * @param attachJunitXML Bit that enables attaching result file to TestLink
 	 */
 	@DataBoundConstructor
-	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
+	public JUnitMethodNameResultSeeker(String includePattern) {
+		super(includePattern);
 	}
 	
 	@Extension
@@ -78,11 +75,8 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
-	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestMethods() ); // i18n
 		try {
 			final JUnitParser parser = new JUnitParser(false);
@@ -92,18 +86,15 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 				for(CaseResult caseResult : suiteResult.getCases()) {
 					final String methodName = caseResult.getClassName() + "#" + caseResult.getName();
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-						for(String value : commaSeparatedValues) {
-							if(! caseResult.isSkipped() && methodName.equals(value)) {
-								final ExecutionStatus status = this.getExecutionStatus(caseResult);
-								automatedTestCase.addCustomFieldAndStatus(value, status);
-								
-								if(this.isIncludeNotes()) {
-									final String notes = this.getJUnitNotes(caseResult);
-									automatedTestCase.appendNotes(notes);
-								}
-								
-								super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
+						if(! caseResult.isSkipped() && methodName.equals(automatedTestCase.getAlias())) {
+							final Status status = this.getStatus(caseResult);
+							automatedTestCase.setStatusId(status.getValue());
+							try {
+								listener.getLogger().println( Messages.Testopia_Builder_Update_AutomatedTestCases() );
+								testopia.updateTestCase(automatedTestCase);
+							} catch (RuntimeException e) {
+								build.setResult(Result.UNSTABLE);
+								e.printStackTrace(listener.getLogger());
 							}
 						}
 					}
@@ -116,39 +107,15 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 		}
 	}
 
-	/**
-	 * @param caseResult the case result
-	 * @return NOT_RUN in case it is skipped, PASSED if it passed, and FAILED otherwise
-	 */
-	private ExecutionStatus getExecutionStatus(CaseResult caseResult) {
+	private Status getStatus(CaseResult caseResult) {
 		if(caseResult.isSkipped()) {
-			return ExecutionStatus.NOT_RUN;
+			return Status.IDLE;
 		} else if(caseResult.isPassed()) {
-			return ExecutionStatus.PASSED;
+			return Status.PASSED;
 		} else {
-			return ExecutionStatus.FAILED;
+			return Status.FAILED;
 		}
 	}
-	
-	/**
-	 * Retrieves the Notes about the JUnit test.
-	 * 
-	 * @param testCase JUnit test.
-	 * @return Notes about the JUnit test.
-	 */
-	private String getJUnitNotes( CaseResult testCase )
-	{
-		StringBuilder notes = new StringBuilder();
-		notes.append( 
-				Messages.Results_JUnit_NotesForTestMethod(
-						testCase.getName(), 
-						testCase.getClassName(), 
-						testCase.getSkipCount(), 
-						testCase.getFailCount(), 
-						(testCase.getSuiteResult() != null ? testCase.getSuiteResult().getTimestamp() : null))
-		);
-		
-		return notes.toString();
-	}
+
 
 }

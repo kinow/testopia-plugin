@@ -53,7 +53,7 @@ import com.tupilabs.testng.parser.TestNGParser;
  * <p>Skips TestNG Method that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.2
+ * @since 1.3
  */
 public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
@@ -63,12 +63,11 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	
 	/**
 	 * @param includePattern
-	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGMethodNameResultSeeker(String includePattern, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
-		super(includePattern, attachTestNGXML, markSkippedTestAsBlocked);
+	public TestNGMethodNameResultSeeker(String includePattern, boolean markSkippedTestAsBlocked) {
+		super(includePattern, markSkippedTestAsBlocked);
 	}
 	
 	@Extension

@@ -26,9 +26,8 @@ package jenkins.plugins.testopia.result;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestResult;
@@ -37,9 +36,11 @@ import hudson.tasks.junit.CaseResult;
 import java.io.IOException;
 import java.util.List;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.mozilla.testopia.model.Status;
 
 /**
  * <p>Seeks for test results matching each JUnit Suite Result name with the key 
@@ -48,19 +49,18 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
  * <p>Skips JUnit Suite Results that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 3.1
+ * @since 1.3
  */
-public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
+public class JUnitSuiteNameResultSeeker extends ResultSeeker {
 
 	private static final long serialVersionUID = -969559401334833078L;
 
 	/**
 	 * @param includePattern Include pattern used when looking for results
-	 * @param keyCustomField Key custom field to match against the results
 	 */
 	@DataBoundConstructor
-	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
+	public JUnitSuiteNameResultSeeker(String includePattern) {
+		super(includePattern);
 	}
 
 	@Extension
@@ -76,35 +76,24 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(java.io.File,
-	 * hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite,
-	 * hudson.plugins.testlink.result.Report)
-	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
 		try {
 			final JUnitParser parser = new JUnitParser(false);
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
 			
-			for(SuiteResult suiteResult : testResult.getSuites()) {
-				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-					for(String value : commaSeparatedValues) {
-						if(suiteResult.getName().equals(value)) {
-							ExecutionStatus status = this.getExecutionStatus(suiteResult);
-							automatedTestCase.addCustomFieldAndStatus(value, status);
-							
-							if(this.isIncludeNotes()) {
-								final String notes = this.getJUnitNotes(suiteResult);
-								automatedTestCase.appendNotes(notes);
-							}
-							
-							super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
+			for (SuiteResult suiteResult : testResult.getSuites()) {
+				for (TestCaseWrapper automatedTestCase : automatedTestCases) {
+					if (suiteResult.getName().equals(automatedTestCase.getAlias())) {
+						final Status status = this.getStatus(suiteResult);
+						automatedTestCase.setStatusId(status.getValue());
+						try {
+							listener.getLogger().println(Messages.Testopia_Builder_Update_AutomatedTestCases());
+							testopia.updateTestCase(automatedTestCase);
+						} catch (RuntimeException e) {
+							build.setResult(Result.UNSTABLE);
+							e.printStackTrace(listener.getLogger());
 						}
 					}
 				}
@@ -116,30 +105,14 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 		}
 	}
 	
-	private ExecutionStatus getExecutionStatus(SuiteResult suiteResult) {
+	private Status getStatus(SuiteResult suiteResult) {
 		List<CaseResult> cases = suiteResult.getCases();
 		for(CaseResult caseResult : cases) {
 			if(!caseResult.isPassed() && !caseResult.isSkipped()) { // Any error, invalidates the suite result
-				return ExecutionStatus.FAILED;
+				return Status.FAILED;
 			}
 		}
-		return ExecutionStatus.PASSED;
-	}
-	
-	private String getJUnitNotes( SuiteResult testSuite )
-	{
-		final StringBuilder notes = new StringBuilder();
-		notes.append(
-				Messages.Results_JUnit_NotesForTestSuite(
-						testSuite.getName(), 
-						testSuite.getStderr(), 
-						testSuite.getStdout(), 
-						Integer.toString(testSuite.getCases().size()), 
-						Double.toString(testSuite.getDuration()), 
-						testSuite.getTimestamp()
-		));
-		
-		return notes.toString();
+		return Status.PASSED;
 	}
 
 }
