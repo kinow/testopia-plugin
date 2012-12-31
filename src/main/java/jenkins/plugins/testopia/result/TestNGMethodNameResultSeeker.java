@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -79,13 +80,13 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "TestNG method name"; // TBD: i18n
+			return Messages.Testopia_TestNG_MethodName();
 		}
 	}
 
 	@Override
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
-		listener.getLogger().println( "Looking for test results using TestNG method name" ); // TBD: i18n
+		listener.getLogger().println( Messages.Testopia_TestNG_LookingForTestMethods() );
 		try {
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
@@ -113,8 +114,8 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 								final String qualifiedName = clazz.getName()+'#'+method.getName();
 								if(qualifiedName.equals(automatedTestCase.getAlias())) {
 									Status status = this.getExecutionStatus(method);
-									
 									automatedTestCase.setStatusId(status.getValue());
+									//listener.getLogger().println( Messages.Testopia_ResultSeeker_UpdateAutomatedTestCases() );
 									testopia.updateTestCase(automatedTestCase);
 								}
 							}

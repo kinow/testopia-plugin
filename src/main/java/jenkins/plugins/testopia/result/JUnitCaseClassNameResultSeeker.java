@@ -76,13 +76,13 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "JUnit class name"; // TBD: i18n
+			return Messages.Testopia_JUnit_ClassName();
 		}
 	}
 
 	@Override
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
-		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() ); // i18n
+		listener.getLogger().println( Messages.Testopia_JUnit_LookingForTestClasses() );
 		try {
 			final JUnitParser parser = new JUnitParser(false);
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
@@ -107,7 +107,7 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 				// Here we update testopia with our findings
 				for(Map.Entry<String, TestCaseWrapper> entry : classNameTestCase.entrySet()) {
 					try {
-						listener.getLogger().println( Messages.Testopia_Builder_Update_AutomatedTestCases() );
+						//listener.getLogger().println( Messages.Testopia_ResultSeeker_UpdateAutomatedTestCases() );
 						testopia.updateTestCase(entry.getValue());
 					} catch (RuntimeException e) {
 						build.setResult(Result.UNSTABLE);

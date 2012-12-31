@@ -77,7 +77,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return Messages.Testopia_TAPResultSeeker_TAPFileName();
+			return Messages.Testopia_TAP_TAPFileName();
 		}
 	}
 
@@ -87,7 +87,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 */
 	@Override
 	public void seek(final TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
-		
+		listener.getLogger().println( Messages.Testopia_TAP_LookingForTAPFileName() );
 		try {
 			final Map<String, TestSet> testSets = build.getWorkspace().act(new FilePath.FileCallable<Map<String, TestSet>>() {
 				private static final long serialVersionUID = 1L;
@@ -122,7 +122,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 					if(tapFileNameWithoutExtension.equals(value)) {
 						final Status status = this.getExecutionStatus(testSets.get(key));
 						automatedTestCase.setStatusId(status.getValue());
-						
+						//listener.getLogger().println( Messages.Testopia_ResultSeeker_UpdateAutomatedTestCases() );
 						testopia.updateTestCase(automatedTestCase);
 					}
 				}

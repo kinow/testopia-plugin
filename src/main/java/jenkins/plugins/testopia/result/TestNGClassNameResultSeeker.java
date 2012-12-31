@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jenkins.plugins.testopia.TestopiaSite;
+import jenkins.plugins.testopia.util.Messages;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -76,13 +77,13 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "TestNG class name"; // TBD: i18n
+			return Messages.Testopia_TestNG_ClassName();
 		}
 	}
 
 	@Override
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestopiaSite testopia) throws ResultSeekerException {
-		listener.getLogger().println( "Looking for test results using TestNG class name" ); // TBD: i18n
+		listener.getLogger().println( Messages.Testopia_TestNG_LookingForTestClasses() );
 		try {
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
@@ -109,6 +110,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 							if(clazz.getName().equals(automatedTestCase.getAlias())) {
 								Status status = this.getExecutionStatus(clazz);
 								automatedTestCase.setStatusId(status.getValue());
+								//listener.getLogger().println( Messages.Testopia_ResultSeeker_UpdateAutomatedTestCases() );
 								testopia.updateTestCase(automatedTestCase);
 							}
 						}
