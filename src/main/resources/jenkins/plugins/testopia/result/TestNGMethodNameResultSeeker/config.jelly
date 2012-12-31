@@ -1,0 +1,11 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testopia/help-testNGIncludePattern.html">
+        <f:textbox id="includePattern" name="TestNGMethodNameResultSeeker.includePattern" value="${instance.includePattern}" />
+    </f:entry>
+    
+    <f:entry title="${%Mark skipped test as Blocked}" help="${rootURL}/../plugin/testopia/help-markSkippedTestAsBlocked.html">
+        <f:checkbox name="TestNGClassNameResultSeeker.markSkippedTestAsBlocked" value="${instance.markSkippedTestAsBlocked}" checked="${instance.markSkippedTestAsBlocked}" />
+    </f:entry>
+
+</j:jelly>
