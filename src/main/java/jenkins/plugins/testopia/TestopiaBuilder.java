@@ -210,8 +210,9 @@ public class TestopiaBuilder extends Builder {
 			setProperties(installation.getProperties(), listener);
 		}
 		TestopiaAPI api = new TestopiaAPI(new URL(installation.getUrl()));
+		String token = "";
 		try {
-			api.login(installation.getUsername(), installation.getPassword());
+			token = api.login(installation.getUsername(), installation.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace(listener.getLogger());
 			throw new AbortException(e.getMessage());
@@ -220,7 +221,7 @@ public class TestopiaBuilder extends Builder {
 		if(LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.log(Level.FINE, Messages.Testopia_Builder_Filtering());
 		}
-		TestRun testCaseRun = api.getTestRun(this.getTestRunId());
+		TestRun testCaseRun = api.getTestRun(this.getTestRunId(), token);
 		TestopiaSite testopia = new TestopiaSite(api);
 		TestCaseWrapper[] testCases = testopia.getTestCases(testCaseRun, api.getTestCases(this.getTestRunId()));
 		if(LOGGER.isLoggable(Level.FINE)) {
